@@ -1,6 +1,6 @@
 # %%
-import os,sys
 from __future__ import print_function, division
+import os,sys
 import pandas as pd
 import numpy as np
 import torch 
@@ -90,25 +90,21 @@ class HIGGS_Dataset(torch.utils.data.Dataset):
         return sample
 
 # %%
-train_loader = torch.utils.data.DataLoader(
-        HIGGS_Dataset(10,train=True,high_level_feats=False))
-
-# %%
 def load_data(dataset_size, batch_size, high_level_feats):
 
     train_loader = torch.utils.data.DataLoader(
-        HIGGS_Dataset(HIGGS_Dataset(dataset_size,train=True,high_level_feats=high_level_feats),
-        batch_size=batch_size, shuffle=True))
+        HIGGS_Dataset(dataset_size,train=True,high_level_feats=high_level_feats),
+        batch_size=batch_size, shuffle=True)
 
     valid_loader = torch.utils.data.DataLoader(
-        HIGGS_Dataset(HIGGS_Dataset(dataset_size,train=None,high_level_feats=high_level_feats),
-        batch_size=batch_size, shuffle=True))
+        HIGGS_Dataset(dataset_size,train=None,high_level_feats=high_level_feats),
+        batch_size=batch_size, shuffle=True)
 
     test_loader = torch.utils.data.DataLoader(
-        HIGGS_Dataset(HIGGS_Dataset(dataset_size,train=False,high_level_feats=high_level_feats),
-        batch_size=batch_size, shuffle=True))
+        HIGGS_Dataset(dataset_size,train=False,high_level_feats=high_level_feats),
+        batch_size=batch_size, shuffle=True)
     
-    return train_loader, test_loader
+    return train_loader, valid_loader, test_loader
 
 # %%
 
