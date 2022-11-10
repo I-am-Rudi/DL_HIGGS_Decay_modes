@@ -10,15 +10,15 @@ import torch.nn.functional as F # implements forward and backward definitions of
 
 # %%
 class HIGGS_Dataset(torch.utils.data.Dataset):
-    """SUSY pytorch dataset."""
+    """HIGGS dataset prepared for use in pytorch"""
 
-    def __init__(self, dataset_size, root_dir="./Dataset/", train=True, transform=None, high_level_feats=None):
+    def __init__(self, dataset_size, root_dir="./Dataset/", train=True, high_level_feats=None):
         """
         Args:
-            csv_file (string): Path to the csv file with annotations.
+            dataset_size: Size of the dataset that will be used. This will be split into training, validation, and test set.
             root_dir (string): Directory with all the images.
-            train (bool, optional): If set to `True` load training data.
-            transform (callable, optional): Optional transform to be applied on a sample.
+            train (bool, optional): If set to `True` load training set.
+                                    If set to `None` load validation set.
             high_level_festures (bool, optional): If set to `True`, working with high-level features only. 
                                         If set to `False`, working with low-level features only.
                                         Default is `None`: working with all features
@@ -37,7 +37,7 @@ class HIGGS_Dataset(torch.utils.data.Dataset):
             print("Need even dataset size. Adjustment was made. New dataset size: ", dataset_size)
 
         half_size = int(dataset_size/2)
-        #Number of datapoints to work with
+        
         df = pd.concat([pd.read_csv(self.root_dir+"htautau.txt", header=None,nrows=half_size,engine='python', sep = '\t', dtype="float32"), pd.read_csv(root_dir+"htautau.txt", header=None,nrows=half_size,engine='python', sep = '\t',dtype="float32")])
         df.columns=features
         labels = [1 for i in range(half_size)] + [0 for i in range(half_size)]
@@ -66,7 +66,7 @@ class HIGGS_Dataset(torch.utils.data.Dataset):
             print("Testing on {} examples".format(valid_size))
 
 
-        # make datasets using only the 8 low-level features and 10 high-level features
+        # make datasets using only the 10 low-level features and 15 high-level features, or all features
         if high_level_feats is None:
             self.data=(X.values.astype(np.float32), Y.values.astype(int))
             print("Using both high and low level features")
@@ -91,6 +91,7 @@ class HIGGS_Dataset(torch.utils.data.Dataset):
 
 # %%
 def load_data(dataset_size, batch_size, high_level_feats):
+    '''Load the data from the dataset class using pytorch'''
 
     train_loader = torch.utils.data.DataLoader(
         HIGGS_Dataset(dataset_size,train=True,high_level_feats=high_level_feats),
